@@ -73,6 +73,15 @@
       }
     },
     {
+      "identity" : "nomongo",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ultim8p/NoMongo.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "046ea3e9972e0a2debc9055b798688ced1d17c88"
+      }
+    },
+    {
       "identity" : "routing-kit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/routing-kit.git",
