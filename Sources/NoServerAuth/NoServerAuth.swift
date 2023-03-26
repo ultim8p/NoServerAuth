@@ -24,25 +24,15 @@ public extension String {
         )
         guard currentCredential == nil else { throw NoServerAuthError.originCreadentialsCreated }
         
-        let id = ObjectId()
         let credentials = try String.noAuthCreateCredentials(
             tag: tag,
-            id: id,
+            entityId: nil,
             entity: NoServerAuthConstant.originEntity)
-        
-        let server = ServerCredentials(
-            _id: id,
-            privateKey: credentials.server.privateKey,
-            entity: NoServerAuthConstant.originEntity
-        )
-        let client = ClientCredentials(
-            _id: id,
-            publicKey: credentials.client.publicKey,
-            entity: NoServerAuthConstant.originEntity)
+        let server = credentials.server
         
         try await server.save(in: db)
         
-        return client
+        return credentials.client
     }
 }
 
@@ -56,21 +46,26 @@ public extension String {
     
     static func noAuthCreateCredentials(
         tag: String,
-        id: ObjectId?,
+        entityId: ObjectId?,
         entity: String
     ) throws -> (server: ServerCredentials, client: ClientCredentials) {
         let aesKey = try String.aesGenerateEncryptionKey()
         let otpKey = try String.generateOTPKey(size: AuthCredentialsDefault.otpKeySize)
+        let id = ObjectId()
         let serverCredentials = ServerCredentials(
             _id: id,
             privateKey: aesKey,
             otpKey: otpKey,
+            entityId: entityId,
             entity: entity)
+        
         let clientCredentials = ClientCredentials(
             _id: id,
             publicKey: aesKey,
             otpKey: otpKey,
+            entityId: entityId,
             entity: entity)
+        
         return (serverCredentials, clientCredentials)
     }
 }

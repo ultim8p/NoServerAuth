@@ -20,6 +20,7 @@ public struct AuthCredentialsMiddleware {
 }
 
 extension AuthCredentialsMiddleware: AsyncMiddleware {
+    
     public func respond(to request: Request, chainingTo next: AsyncResponder) async throws -> Response {
         try await request.authenticateCredentials(in: request.mongoDB, authClosure: authClosure)
         return try await next.respond(to: request)

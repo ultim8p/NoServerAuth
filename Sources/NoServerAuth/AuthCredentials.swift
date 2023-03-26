@@ -15,4 +15,6 @@ public struct AuthCredentials: Codable {
     var token: Data?
     
     var nextAuth: Data?
+    
+    var entity: String?
 }

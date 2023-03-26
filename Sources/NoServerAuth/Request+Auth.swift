@@ -33,7 +33,10 @@ public extension Request {
         let auth: AuthCredentials = try privateKey.aesDecrypt(data: credentials)
         
         // 2 Find Credentials by Auth._id
-        let creds: ServerCredentials = try await ServerCredentials.findOne(in: db, id: auth._id)
+        guard let authId = auth._id, let authEntity = auth.entity
+        else { throw NoServerAuthError.missingCredentials }
+        let query: Document = ["entityId": authId, "entity": authEntity]
+        let creds: ServerCredentials = try await ServerCredentials.findOne(in: db, query: query)
         
         // 3 Verify otp token by generating with local Credentials and matching to Auth object.
         try creds.verify(auth: auth)

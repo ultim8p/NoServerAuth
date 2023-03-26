@@ -11,7 +11,7 @@ import Vapor
 import NoMongo
 import NoCrypto
 
-public struct ClientCredentials: DBCollectionable, Content {
+public final class ClientCredentials: DBCollectionable, Content {
     
     public var _id: ObjectId?
     
@@ -19,23 +19,19 @@ public struct ClientCredentials: DBCollectionable, Content {
     
     public var otpKey: String?
     
+    public var entityId: ObjectId?
+    
     public var entity: String?
-}
-
-public extension ClientCredentials {
     
-    var authenticatedToken: Data {
-        get throws {
-            guard let otpKey = otpKey,
-                  let publicKey = publicKey else { throw NoServerAuthError.missingCredentials }
-            let code = try otpKey.getOTPToken(interval: AuthCredentialsDefault.otpInterval)
-            let token = AuthToken(token: code)
-            return try publicKey.aesEncrypt(object: token)
-        }
-    }
-    
-    func authCredentials() throws -> AuthCredentials {
-        let token = try authenticatedToken
-        return AuthCredentials(_id: _id, token: token)
+    init(_id: ObjectId? = nil,
+         publicKey: String? = nil,
+         otpKey: String? = nil,
+         entityId: ObjectId? = nil,
+         entity: String? = nil) {
+        self._id = _id
+        self.publicKey = publicKey
+        self.otpKey = otpKey
+        self.entityId = entityId
+        self.entity = entity
     }
 }

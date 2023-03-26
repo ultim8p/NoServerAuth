@@ -13,7 +13,7 @@ import Vapor
 public typealias ServerCredentialsAuthenticatedClosure = (_ request: Request,
                                                           _ credentials: ServerCredentials) async throws -> Void
 
-public struct ServerCredentials: DBCollectionable, Content {
+public final class ServerCredentials: DBCollectionable, Content {
     
     public var _id: ObjectId?
     
@@ -21,5 +21,19 @@ public struct ServerCredentials: DBCollectionable, Content {
     
     public var otpKey: String?
     
+    public var entityId: ObjectId?
+    
     public var entity: String?
+    
+    public init(_id: ObjectId? = nil,
+                privateKey: String? = nil,
+                otpKey: String? = nil,
+                entityId: ObjectId? = nil,
+                entity: String? = nil) {
+        self._id = _id
+        self.privateKey = privateKey
+        self.otpKey = otpKey
+        self.entityId = entityId
+        self.entity = entity
+    }
 }
