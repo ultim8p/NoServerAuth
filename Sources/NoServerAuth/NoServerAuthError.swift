@@ -18,4 +18,6 @@ public enum NoServerAuthError: Error {
     case originCreadentialsCreated
     
     case missingAuthenticatedObject
+    
+    case missingCreationValues
 }

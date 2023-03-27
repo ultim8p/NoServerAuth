@@ -11,7 +11,7 @@ import Vapor
 import NoMongo
 import NoCrypto
 
-public final class ClientCredentials: DBCollectionable, Content {
+public final class ClientCredentials: DBCollectionable, Content, CredentialIdentifiable {
     
     public var _id: ObjectId?
     
@@ -27,9 +27,9 @@ public final class ClientCredentials: DBCollectionable, Content {
     
     public var appIdentifier: String?
         
-    init() { }
+    public init() { }
     
-    init(_id: ObjectId? = nil,
+    public init(_id: ObjectId? = nil,
          publicKey: String? = nil,
          otpKey: String? = nil,
          entityId: ObjectId? = nil,

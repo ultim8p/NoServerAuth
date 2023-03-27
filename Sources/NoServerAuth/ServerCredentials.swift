@@ -13,7 +13,29 @@ import Vapor
 public typealias ServerCredentialsAuthenticatedClosure = (_ request: Request,
                                                           _ credentials: ServerCredentials) async throws -> Void
 
-public final class ServerCredentials: DBCollectionable, Content {
+public protocol CredentialIdentifiable: DBCollectionable {
+    
+    var entityId: ObjectId? { get set }
+    
+    var entity: String? { get set }
+    
+    var deviceName: String? { get set }
+    
+    var appIdentifier: String? { get set }
+}
+
+public protocol Credentialable {
+    
+    var _id: ObjectId? { get set }
+    
+    static var entityName: String { get set }
+    
+    // Specify the current server app identifier.
+    // This will be returned to the client for them to identify the key for our app.
+    static var clientAppIdentifier: String { get set }
+}
+
+public final class ServerCredentials: Content, CredentialIdentifiable {
     
     public var _id: ObjectId?
     
@@ -29,7 +51,7 @@ public final class ServerCredentials: DBCollectionable, Content {
     
     public var appIdentifier: String?
     
-    init() { }
+    public init() { }
     
     public init(_id: ObjectId? = nil,
                 privateKey: String? = nil,
@@ -46,15 +68,61 @@ public final class ServerCredentials: DBCollectionable, Content {
         self.deviceName = deviceName
         self.appIdentifier = appIdentifier
     }
+}
+
+public extension Credentialable {
     
-    public static func findOptional(db: MongoDatabase, entity: String?, entityId: ObjectId?, deviceName: String?, appIdentifier: String?) async throws
-    -> ServerCredentials? {
+    func regenerateCredentials(db: MongoDatabase, deviceName: String?, serverAppIdentifier: String?)
+    async throws -> ClientCredentials {
+        guard let _id, let deviceName, let serverAppIdentifier
+        else { throw NoServerAuthError.missingCreationValues }
+        if let existingCredentials = try await ServerCredentials.findOptional(
+            db: db, entity: Self.entityName, entityId: _id, deviceName: deviceName, appIdentifier: serverAppIdentifier) {
+            print("DELETED EXISITNG CREDS: \(existingCredentials.appIdentifier) \(existingCredentials.deviceName)")
+            try await existingCredentials.delete(in: db)
+        }
+        let credentials = try String.noAuthCreateCredentials(
+            entityId: _id,
+            entity: Self.entityName,
+            deviceName: deviceName,
+            serverAppIdentifier: serverAppIdentifier,
+            clientAppIdentifier: Self.clientAppIdentifier)
+        try await credentials.server.save(in: db)
+        print("CREATED CREDENTIALS: \(credentials.client.appIdentifier) \(credentials.client.deviceName)")
+        return credentials.client
+    }
+}
+
+// Mostly user for saving credentials from other servers locally.
+public extension CredentialIdentifiable {
+    
+    static func findOptional(db: MongoDatabase,
+                             entity: String?,
+                             entityId: ObjectId?,
+                             deviceName: String?,
+                             appIdentifier: String?)
+    async throws -> Self? {
         guard let entityId, let entity, let deviceName, let appIdentifier
-        else { throw NoServerAuthError.missingCredentials }
-        return try await ServerCredentials.findOneOptional(in: db, query: [
+        else { return nil }
+        return try await Self.findOneOptional(in: db, query: [
             "entity": entity,
             "entityId": entityId,
             "deviceName": deviceName,
             "appIdentifier": appIdentifier])
+    }
+    
+    // Finds existing credentials with the same identifiable properties and replaces it.
+    func replaceOrSave(db: MongoDatabase) async throws {
+        if let existing = try await Self.findOptional(
+            db: db,
+            entity: entity,
+            entityId: entityId,
+            deviceName: deviceName,
+            appIdentifier: appIdentifier) {
+            print("DELETING NEW CREDENTIALS: \(entity) \(appIdentifier) \(deviceName)")
+            try await existing.delete(in: db)
+        }
+        print("SAVIG NEW CREDENTIALS: \(entity) \(appIdentifier) \(deviceName)")
+        try await self.save(in: db)
     }
 }
