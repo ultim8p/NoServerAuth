@@ -72,12 +72,18 @@ public final class ServerCredentials: Content, CredentialIdentifiable {
 
 public extension Credentialable {
     
+    // If there were existing server credentials for this object, delete them.
+    // We will always create new credentials, save server and return client.
     func recreateCredentials(db: MongoDatabase, deviceName: String?, serverAppIdentifier: String?)
     async throws -> ClientCredentials {
         guard let _id, let deviceName, let serverAppIdentifier
         else { throw NoServerAuthError.missingCreationValues }
         if let existingCredentials = try await ServerCredentials.findOptional(
-            db: db, entity: Self.entityName, entityId: _id, deviceName: deviceName, appIdentifier: serverAppIdentifier) {
+            db: db,
+            entity: Self.entityName,
+            entityId: _id,
+            deviceName: deviceName,
+            appIdentifier: serverAppIdentifier) {
             print("DELETED EXISITNG CREDS: \(existingCredentials.appIdentifier) \(existingCredentials.deviceName)")
             try await existingCredentials.delete(in: db)
         }
