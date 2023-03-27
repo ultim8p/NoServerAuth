@@ -23,7 +23,6 @@ public extension String {
         var previousKey: String?
         
         for credential in credentials {
-            
             var credAuth = try credential.authCredentials()
             if let prevAuth = auth, let key = previousKey {
                 let subCredentials = try key.aesEncrypt(object: prevAuth)

@@ -28,7 +28,8 @@ public extension String {
             entityId: ObjectId(),
             entity: NoServerAuthConstant.originEntity,
             deviceName: "",
-            appIdentifier: "")
+            serverAppIdentifier: "",
+            clientAppIdentifier: "")
         
         let server = credentials.server
         
@@ -50,7 +51,8 @@ public extension String {
         entityId: ObjectId,
         entity: String,
         deviceName: String,
-        appIdentifier: String
+        serverAppIdentifier: String,
+        clientAppIdentifier: String
     ) throws -> (server: ServerCredentials, client: ClientCredentials) {
         let aesKey = try String.aesGenerateEncryptionKey()
         let otpKey = try String.generateOTPKey(size: AuthCredentialsDefault.otpKeySize)
@@ -62,12 +64,16 @@ public extension String {
             entityId: entityId,
             entity: entity,
             deviceName: deviceName,
-            appIdentifier: appIdentifier)
+            appIdentifier: serverAppIdentifier)
         
         let clientCredentials = ClientCredentials(
             _id: id,
             publicKey: aesKey,
-            otpKey: otpKey)
+            otpKey: otpKey,
+            entityId: entityId,
+            entity: entity,
+            deviceName: deviceName,
+            appIdentifier: clientAppIdentifier)
         
         return (serverCredentials, clientCredentials)
     }
