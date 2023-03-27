@@ -47,14 +47,6 @@ public final class ServerCredentials: DBCollectionable, Content {
         self.appIdentifier = appIdentifier
     }
     
-    public func clientCredentials() -> ClientCredentials {
-        let obj = ClientCredentials()
-        obj._id = _id
-        obj.publicKey = privateKey
-        obj.otpKey = otpKey
-        return obj
-    }
-    
     public static func findOptional(db: MongoDatabase, entity: String?, entityId: ObjectId?, deviceName: String?, appIdentifier: String?) async throws
     -> ServerCredentials? {
         guard let entityId, let entity, let deviceName, let appIdentifier
