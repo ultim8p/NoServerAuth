@@ -72,7 +72,7 @@ public final class ServerCredentials: Content, CredentialIdentifiable {
 
 public extension Credentialable {
     
-    func regenerateCredentials(db: MongoDatabase, deviceName: String?, serverAppIdentifier: String?)
+    func recreateCredentials(db: MongoDatabase, deviceName: String?, serverAppIdentifier: String?)
     async throws -> ClientCredentials {
         guard let _id, let deviceName, let serverAppIdentifier
         else { throw NoServerAuthError.missingCreationValues }
