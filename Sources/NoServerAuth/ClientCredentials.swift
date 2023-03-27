@@ -18,20 +18,14 @@ public final class ClientCredentials: DBCollectionable, Content {
     public var publicKey: String?
     
     public var otpKey: String?
-    
-    public var entityId: ObjectId?
-    
-    public var entity: String?
+        
+    init() { }
     
     init(_id: ObjectId? = nil,
          publicKey: String? = nil,
-         otpKey: String? = nil,
-         entityId: ObjectId? = nil,
-         entity: String? = nil) {
+         otpKey: String? = nil) {
         self._id = _id
         self.publicKey = publicKey
         self.otpKey = otpKey
-        self.entityId = entityId
-        self.entity = entity
     }
 }

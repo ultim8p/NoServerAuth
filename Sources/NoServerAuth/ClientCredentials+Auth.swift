@@ -21,6 +21,6 @@ public extension ClientCredentials {
     
     func authCredentials() throws -> AuthCredentials {
         let token = try authenticatedToken
-        return AuthCredentials(_id: _id, token: token, entity: entity)
+        return AuthCredentials(_id: _id, token: token)
     }
 }

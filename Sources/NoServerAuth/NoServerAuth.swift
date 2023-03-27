@@ -16,7 +16,7 @@ public struct NoServerAuth {
 public extension String {
     
     @discardableResult
-    static func noAuthGenerateOriginCredentials(in db: MongoDatabase, tag: String) async throws
+    static func noAuthGenerateOriginCredentials(in db: MongoDatabase) async throws
     -> ClientCredentials {
         let currentCredential = try await ServerCredentials.findOneOptional(
             in: db,
@@ -25,9 +25,11 @@ public extension String {
         guard currentCredential == nil else { throw NoServerAuthError.originCreadentialsCreated }
         
         let credentials = try String.noAuthCreateCredentials(
-            tag: tag,
-            entityId: nil,
-            entity: NoServerAuthConstant.originEntity)
+            entityId: ObjectId(),
+            entity: NoServerAuthConstant.originEntity,
+            deviceName: "",
+            appIdentifier: "")
+        
         let server = credentials.server
         
         try await server.save(in: db)
@@ -45,9 +47,10 @@ public enum AuthCredentialsDefault {
 public extension String {
     
     static func noAuthCreateCredentials(
-        tag: String,
-        entityId: ObjectId?,
-        entity: String
+        entityId: ObjectId,
+        entity: String,
+        deviceName: String,
+        appIdentifier: String
     ) throws -> (server: ServerCredentials, client: ClientCredentials) {
         let aesKey = try String.aesGenerateEncryptionKey()
         let otpKey = try String.generateOTPKey(size: AuthCredentialsDefault.otpKeySize)
@@ -57,14 +60,14 @@ public extension String {
             privateKey: aesKey,
             otpKey: otpKey,
             entityId: entityId,
-            entity: entity)
+            entity: entity,
+            deviceName: deviceName,
+            appIdentifier: appIdentifier)
         
         let clientCredentials = ClientCredentials(
             _id: id,
             publicKey: aesKey,
-            otpKey: otpKey,
-            entityId: entityId,
-            entity: entity)
+            otpKey: otpKey)
         
         return (serverCredentials, clientCredentials)
     }

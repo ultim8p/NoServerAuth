@@ -7,6 +7,7 @@
 
 import Foundation
 import MongoKitten
+import Vapor
 
 public struct AuthCredentials: Codable {
     
@@ -17,4 +18,11 @@ public struct AuthCredentials: Codable {
     var nextAuth: Data?
     
     var entity: String?
+}
+
+public extension HTTPHeaders {
+    
+    var deviceName: String? {
+        first(name: "DeviceName")
+    }
 }
