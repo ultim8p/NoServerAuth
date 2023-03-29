@@ -24,7 +24,7 @@ public protocol CredentialIdentifiable: DBCollectionable {
     var appIdentifier: String? { get set }
 }
 
-public protocol Credentialable {
+public protocol Credentialable: Content, Codable {
     
     var _id: ObjectId? { get set }
     
