@@ -9,31 +9,41 @@ import Foundation
 
 public extension String {
     
-    private func apiAuthBearer(auth: AuthCredentials?) throws -> String {
-        guard let auth = auth else { return self }
-        let encryptedBearer = try self.aesEncrypt(object: auth)
-        return encryptedBearer.base64EncodedString()
-    }
-    
-    /// Call this function on a public key to get the fully encrypted Bearer header parameter for a given array of `Credentials`.
-    func apiAuthBearer(credentials: [ClientCredentials]? = nil) throws -> String {
+    func apiAuthBearer(
+        credentials: [ClientCredentials]?
+    ) throws -> String? {
         guard let credentials = credentials, !credentials.isEmpty else { return self }
         
-        var auth: AuthCredentials?
-        var previousKey: String?
+        var sumAuth: Data? = nil
         
-        for credential in credentials {
-            var credAuth = try credential.authCredentials()
-            if let prevAuth = auth, let key = previousKey {
-                let subCredentials = try key.aesEncrypt(object: prevAuth)
-                credAuth.nextAuth = subCredentials
-                previousKey = credential.publicKey
-                auth = credAuth
-            } else {
-                previousKey = credential.publicKey
-                auth = credAuth
-            }
+        for i in 0..<credentials.count {
+            let credential = credentials[i]
+            
+            let hasNext = i+1 < credentials.count
+            guard let key = hasNext ? credentials[i+1].publicKey : self
+            else { continue }
+            
+            let authData = try encryptAuth(
+                publicKey: key,
+                credentials: credential,
+                nextAuth: sumAuth)
+            sumAuth = authData
         }
-        return try self.apiAuthBearer(auth: auth)
+        
+        guard let sumAuth = sumAuth else { return nil }
+        return sumAuth.base64EncodedString()
+    }
+    
+    func encryptAuth(publicKey: String,
+                     credentials: ClientCredentials,
+                     nextAuth: Data?) throws -> Data {
+        
+        // 1 Build Auth from Credentials
+        var auth = try credentials.authCredentials()
+        auth.nextAuth = nextAuth
+        
+        // 2 Encrypt Auth
+        let encryptedAuth = try publicKey.aesEncrypt(object: auth)
+        return encryptedAuth
     }
 }

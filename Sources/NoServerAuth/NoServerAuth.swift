@@ -40,8 +40,11 @@ public extension String {
 }
 
 public enum AuthCredentialsDefault {
+    
     static let otpInterval: Int = 30
+    
     static let otpRangeValidation: Int = 1
+    
     static let otpKeySize: OTPKeySize = .key40
 }
 
