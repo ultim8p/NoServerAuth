@@ -84,7 +84,7 @@ public extension Credentialable {
             entityId: _id,
             deviceName: deviceName,
             appIdentifier: serverAppIdentifier) {
-            print("DELETED EXISITNG CREDS: \(existingCredentials.appIdentifier) \(existingCredentials.deviceName)")
+//            print("DELETED EXISITNG CREDS: \(existingCredentials.appIdentifier) \(existingCredentials.deviceName)")
             try await existingCredentials.delete(in: db)
         }
         let credentials = try String.noAuthCreateCredentials(
@@ -94,7 +94,7 @@ public extension Credentialable {
             serverAppIdentifier: serverAppIdentifier,
             clientAppIdentifier: Self.clientAppIdentifier)
         try await credentials.server.save(in: db)
-        print("CREATED CREDENTIALS: \(credentials.client.appIdentifier) \(credentials.client.deviceName)")
+//        print("CREATED CREDENTIALS: \(credentials.client.appIdentifier) \(credentials.client.deviceName)")
         return credentials.client
     }
 }

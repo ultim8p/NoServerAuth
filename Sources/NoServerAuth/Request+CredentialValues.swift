@@ -14,8 +14,8 @@ public extension Request {
         get throws {
             guard let bearer = headers.bearerAuthorization?.token,
                     let bearerData = bearer.base64Data
-                    
             else { throw NoServerAuthError.missingBearer }
+            
             return bearerData
         }
     }

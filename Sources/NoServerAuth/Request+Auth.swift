@@ -28,7 +28,7 @@ public extension Request {
         guard let privateKey = privateKey,
               let credentials = auth
         else { throw NoServerAuthError.missingCredentials }
-    
+        
         // 1 Decrypt Auth using privateKey
         let auth: AuthCredentials = try privateKey.aesDecrypt(data: credentials)
         
