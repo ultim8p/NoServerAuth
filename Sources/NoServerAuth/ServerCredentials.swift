@@ -32,7 +32,7 @@ public protocol Credentialable: Content, Codable {
     
     // Specify the current server app identifier.
     // This will be returned to the client for them to identify the key for our app.
-    static var clientAppIdentifier: String { get set }
+//    static var clientAppIdentifier: String { get set }
 }
 
 public final class ServerCredentials: Content, CredentialIdentifiable {
@@ -74,7 +74,7 @@ public extension Credentialable {
     
     // If there were existing server credentials for this object, delete them.
     // We will always create new credentials, save server and return client.
-    func recreateCredentials(db: MongoDatabase, deviceName: String?, serverAppIdentifier: String?)
+    func recreateCredentials(db: MongoDatabase, deviceName: String?, serverAppIdentifier: String?, clientAppIdentifier: String)
     async throws -> ClientCredentials {
         guard let _id, let deviceName, let serverAppIdentifier
         else { throw NoServerAuthError.missingCreationValues }
@@ -92,7 +92,7 @@ public extension Credentialable {
             entity: Self.entityName,
             deviceName: deviceName,
             serverAppIdentifier: serverAppIdentifier,
-            clientAppIdentifier: Self.clientAppIdentifier)
+            clientAppIdentifier: clientAppIdentifier)
         try await credentials.server.save(in: db)
 //        print("CREATED CREDENTIALS: \(credentials.client.appIdentifier) \(credentials.client.deviceName)")
         return credentials.client
