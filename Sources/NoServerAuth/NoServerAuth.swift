@@ -11,6 +11,11 @@ public struct NoServerAuth {
 
     public init() {
     }
+    
+    static func createIndexes(in db: MongoDatabase) async throws {
+        try await ServerCredentials.createIndexes(in: db)
+        try await ClientCredentials.createIndexes(in: db)
+    }
 }
 
 public extension String {

@@ -23,7 +23,7 @@ public extension ServerCredentials {
         guard let otpKey = otpKey,
               let tokenValue = token.token
         else { throw NoServerAuthError.missingCredentials }
-        print("VERIFYING OTP: \(otpKey) \(tokenValue)")
+        
         try otpKey.validateOTP(token: tokenValue,
                                interval: AuthCredentialsDefault.otpInterval,
                                range: AuthCredentialsDefault.otpRangeValidation)
