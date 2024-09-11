@@ -69,7 +69,7 @@ public final class ServerCredentials: Content, CredentialIdentifiable {
         self.appIdentifier = appIdentifier
     }
     
-    static func createIndexes(in db: MongoDatabase) async throws {
+    public static func createIndexes(in db: MongoDatabase) async throws {
         let collection = ServerCredentials.collection(in: db)
         try await collection.createIndex(named: "entity", keys: [
             "entity": 1
