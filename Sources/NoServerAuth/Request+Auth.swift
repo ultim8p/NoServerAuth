@@ -29,27 +29,28 @@ public extension Request {
               let credentials = auth
         else { throw NoServerAuthError.missingCredentials }
         
-        print("BRNCH: AUTH 1")
         // 1 Decrypt Auth using privateKey
         let auth: AuthCredentials = try privateKey.aesDecrypt(data: credentials)
-        print("BRNCH: AUTH 2")
+        
         // 2 Find Credentials by Auth._id
         guard let authId = auth._id else { throw NoServerAuthError.missingCredentials }
         let creds: ServerCredentials = try await ServerCredentials.findOne(in: db, id: authId)
-        print("BRNCH: AUTH 3")
+        
         // 3 Verify otp token by generating with local Credentials and matching to Auth object.
         try creds.verify(auth: auth)
-        print("BRNCH: AUTH 4")
+        
         // 4 Call closure to
         try await authClosure?(self, creds)
-        print("BRNCH: AUTH 5")
+        
         // 5 Check if there is embedded Auth
         guard let nextAuth = auth.nextAuth else { return }
-        print("BRNCH: AUTH 6")
+        
         // 6 Verify the next credentials by decripting with the current Credentials
-        try await authenticateCredentials(in: db,
-                                          privateKey: creds.privateKey,
-                                          auth: nextAuth,
-                                          authClosure: authClosure)
+        try await authenticateCredentials(
+            in: db,
+            privateKey: creds.privateKey,
+            auth: nextAuth,
+            authClosure: authClosure
+        )
     }
 }
