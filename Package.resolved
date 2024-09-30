@@ -1,4 +1,5 @@
 {
+  "originHash" : "e5bf272f00819377baf473624a93998ba31c6a943c5a321547281230bac1b001",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -68,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ultim8p/NoCrypto.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "445f66ec7bb419144dd155deb034e92ad9212b11"
+        "revision" : "6695cbd3187460d095ae1e157182eb58f299a746",
+        "version" : "0.0.1"
       }
     },
     {
@@ -77,8 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ultim8p/NoMongo.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "57a65b92e98437ce0a8255d33865cb09ae0fae7d"
+        "revision" : "871c145f7e333498a7dd9b2d8fc4e6c1fbbcff34",
+        "version" : "0.0.1"
       }
     },
     {
@@ -253,5 +254,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }
