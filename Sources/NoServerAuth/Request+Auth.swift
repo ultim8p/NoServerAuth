@@ -13,7 +13,7 @@ import NoMongo
 public extension Request {
     
     func authenticateCredentials(in db: MongoDatabase, authClosure: ServerCredentialsAuthenticatedClosure?) async throws {
-        let bearer = try bearerData
+        let bearer = bearerData
         let privateKey = try await db.appPrivateKey
         print("OTP: NoServerAuth: bearer: \(bearer) PKey: \(privateKey)")
         try await authenticateCredentials(
@@ -33,7 +33,7 @@ public extension Request {
         guard
             let privateKey = privateKey,
             let credentials = auth
-        else { throw NoServerAuthError.missingCredentials }
+        else { return }
         
         // 1 Decrypt Auth using privateKey
         let auth: AuthCredentials = try privateKey.aesDecrypt(data: credentials)

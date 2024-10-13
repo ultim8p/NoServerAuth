@@ -10,11 +10,11 @@ import MongoKitten
 
 public extension Request {
     
-    var bearerData: Data {
-        get throws {
+    var bearerData: Data? {
+        get {
             guard let bearer = headers.bearerAuthorization?.token,
                     let bearerData = bearer.base64Data
-            else { throw NoServerAuthError.missingBearer }
+            else { return nil }
             
             return bearerData
         }
